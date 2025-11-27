@@ -1,4 +1,3 @@
-# predict.py
 import argparse
 import json
 import lightgbm as lgb
@@ -34,3 +33,4 @@ if __name__ == "__main__":
     pred, feats = predict_from_recent(recent, price=args.price, promo_flag=args.promo)
     output = {"prediction": float(pred), "features": feats}
     print(json.dumps(output, indent=2))
+
