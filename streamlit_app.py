@@ -1,4 +1,3 @@
-# streamlit_app.py
 import streamlit as st
 import lightgbm as lgb
 import numpy as np
@@ -34,7 +33,7 @@ def main():
             st.write("Features used:")
             st.json(feats)
 
-            # Feature importance (if available)
+            # Feature importance 
             fimp = model.feature_importance(importance_type="gain")
             names = model.feature_name()
             if len(names) == len(fimp):
@@ -48,3 +47,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
