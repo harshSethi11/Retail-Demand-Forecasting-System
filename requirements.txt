@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-pyspark
 pandas
 numpy
 lightgbm
