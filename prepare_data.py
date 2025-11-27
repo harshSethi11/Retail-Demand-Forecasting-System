@@ -1,4 +1,3 @@
-# prepare_pos_data.py
 import os
 import pandas as pd
 import numpy as np
@@ -11,9 +10,7 @@ TRAIN_CSV = os.path.join(RAW_DIR, "train.csv")
 ITEMS_CSV = os.path.join(RAW_DIR, "items.csv")
 
 def load_kaggle():
-    print("Loading Kaggle files...")
-
-    # Explicit dtypes to avoid mixed-type warnings
+    print("Loading Kaggle files..")
     train = pd.read_csv(
         TRAIN_CSV,
         parse_dates=["date"],
@@ -21,7 +18,7 @@ def load_kaggle():
             "store_nbr": "int32",
             "item_nbr": "int32",
             "unit_sales": "float32",
-            "onpromotion": "string"   # read as string to clean safely
+            "onpromotion": "string"   
         },
         low_memory=False
     )
@@ -45,7 +42,7 @@ def build_pos_raw(train, items, sample_rows=200_000, random_state=42):
         "onpromotion": "promo_flag"
     }, inplace=True)
 
-    # Clean promo_flag in a modern way (no fillna warning)
+    # Clean promo_flag
     # Convert everything to lowercase string, handle missing, then map to 0/1
     df["promo_flag"] = (
         df["promo_flag"]
@@ -56,10 +53,9 @@ def build_pos_raw(train, items, sample_rows=200_000, random_state=42):
         .astype("int8")
     )
 
-    # Clip negative sales (Favorita has returns)
+    # Clip negative sales
     df["sales"] = df["sales"].clip(lower=0).astype("float32")
 
-    # Merge item families
     if "family" in items.columns:
         fam_map = items.set_index("item_nbr")["family"].to_dict()
         df["family"] = df["item_id"].map(fam_map).fillna("unknown")
@@ -83,7 +79,7 @@ def build_pos_raw(train, items, sample_rows=200_000, random_state=42):
 
 if __name__ == "__main__":
     train, items = load_kaggle()
-    SAMPLE_SIZE = 200_000  # you can reduce to 20_000 if you want faster runs
+    SAMPLE_SIZE = 200_000  # reduce to 20_000 to get faster runs
     pos_df = build_pos_raw(train, items, sample_rows=SAMPLE_SIZE)
 
     out_path = os.path.join(OUT_DIR, "pos_raw.csv")
@@ -91,3 +87,4 @@ if __name__ == "__main__":
 
     print("Wrote:", out_path)
     print("Shape:", pos_df.shape)
+
