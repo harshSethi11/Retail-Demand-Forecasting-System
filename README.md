@@ -1,8 +1,7 @@
 # Retail-Demand-Forecasting-System
 
 This project builds a complete production-ready forecasting pipeline using:
-
-Kaggle Favorita dataset (Walmart-scale retail dataset)
+1) Kaggle Favorita dataset (Walmart-scale retail dataset)
 
 Polars for fast feature engineering (Spark alternative)
 
