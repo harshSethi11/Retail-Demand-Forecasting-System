@@ -1,6 +1,3 @@
-# train_models.py
-# Trains a LightGBM model using the processed retail features.
-
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
@@ -12,29 +9,18 @@ MODEL_PATH = "./models/lightgbm_sales_model.txt"
 
 os.makedirs("./models", exist_ok=True)
 
-
-# ----------------------------------------
-# Load processed data
-# ----------------------------------------
 def load_data():
-    print("📥 Loading processed features...")
+    print("Loading processed features..")
     df = pd.read_parquet(PROCESSED_FILE)
     print(f"Loaded {len(df):,} rows.")
     return df
 
-
-# ----------------------------------------
-# Prepare dataset (features + splits)
-# ----------------------------------------
 def prepare_dataset(df):
-    print("⚙️ Preparing training dataset...")
-
+    print("Preparing training dataset..")
     df = df.sort_values(["store_id", "item_id", "date"])
-
     # target
     y = df["sales"].values
-
-    # FEATURES LIST – modify if needed
+    # FEATURES LIST 
     feature_cols = [
         "price",
         "promo_flag",
@@ -42,7 +28,6 @@ def prepare_dataset(df):
         "sales_lag7",
         "rolling_mean_7",
     ]
-
     # Extract feature matrix
     X = df[feature_cols].values
 
@@ -56,12 +41,8 @@ def prepare_dataset(df):
 
     return X_train, y_train, X_val, y_val, feature_cols
 
-
-# ----------------------------------------
-# Train LightGBM model
-# ----------------------------------------
 def train_lightgbm(X_train, y_train, X_val, y_val, feature_cols):
-    print("🚀 Training LightGBM model...")
+    print("Training LightGBM model..")
 
     params = {
         "objective": "regression",
@@ -71,7 +52,7 @@ def train_lightgbm(X_train, y_train, X_val, y_val, feature_cols):
         "max_depth": -1,
         "boosting_type": "gbdt",
         "verbose": -1,
-        "device": "cpu",  # For compatibility
+        "device": "cpu",  
     }
 
     train_ds = lgb.Dataset(X_train, label=y_train, feature_name=feature_cols)
@@ -88,15 +69,11 @@ def train_lightgbm(X_train, y_train, X_val, y_val, feature_cols):
         ]
     )
 
-    print(f"💾 Model saved to {MODEL_PATH}")
+    print(f"Model saved to {MODEL_PATH}.")
     model.save_model(MODEL_PATH)
 
     return model
 
-
-# ----------------------------------------
-# Evaluation
-# ----------------------------------------
 def evaluate(model, X_val, y_val):
     preds = model.predict(X_val)
 
@@ -109,20 +86,18 @@ def evaluate(model, X_val, y_val):
 
     wape = np.sum(np.abs(y_val - preds)) / (np.sum(np.abs(y_val)) + 1e-8)
 
-    print("\n📊 Final Evaluation Metrics")
+    print("\nFinal Evaluation Metrics: ")
     print(f"MAE:   {mae:.4f}")
     print(f"RMSE:  {rmse:.4f}")
     print(f"SMAPE: {smape:.2f}%")
     print(f"WAPE:  {wape:.4f}")
 
 
-# ----------------------------------------
-# Main
-# ----------------------------------------
 if __name__ == "__main__":
     df = load_data()
     X_train, y_train, X_val, y_val, feature_cols = prepare_dataset(df)
     model = train_lightgbm(X_train, y_train, X_val, y_val, feature_cols)
     evaluate(model, X_val, y_val)
 
-    print("\n✅ Training complete.")
+    print("\nTraining complete.")
+
