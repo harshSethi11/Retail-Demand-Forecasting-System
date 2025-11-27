@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pyspark
+pandas
+numpy
+lightgbm
+tensorflow
+joblib
+streamlit
+pyarrow
